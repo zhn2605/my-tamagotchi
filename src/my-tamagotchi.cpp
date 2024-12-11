@@ -297,7 +297,7 @@ void MainLoop() {
 }
 
 void CleanUp() {
-    glDeleteProgram(graphicsPipelineShaderProgram);
+    graphicsShader->deleteProgram();
     
     // Terminate app
     app.Terminate();

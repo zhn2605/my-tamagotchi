@@ -26,6 +26,7 @@ struct Vertex {
 
 struct Texture {
 	unsigned int id;
+	string path;
 	string type;
 };
 
