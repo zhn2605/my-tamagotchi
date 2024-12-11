@@ -7,10 +7,7 @@
 #include <glad/glad.h>
 // GLM
 #include <glm/glm.hpp>
-#include <glm/vec3.hpp>
-#include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 
 // Libraries
 #include "App.hpp"
@@ -224,7 +221,7 @@ void PreDraw() {
 
     // Important: ORDER MATTERS (T, R, S for rotation around object. R, T, S for simulated rotation around us
     // Rotation test
-    uRotate -= .1f;
+    uRotate -= .1f * deltaTime;
     //std::cout << "uRotate: " << uRotate << std::endl;
 
     // Translate
