@@ -1,4 +1,3 @@
-# my-tamagotchi
 My tamagotchi! My tamagotchi! My tamagotchi!
 
 Love my tamagotchi!
