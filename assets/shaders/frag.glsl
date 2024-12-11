@@ -18,7 +18,6 @@ struct Light {
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
-in vec3 v_vertexColors;
 
 uniform vec3 viewPos;
 uniform Material material
@@ -40,7 +39,6 @@ void main() {
    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), material.shininess);
    vec3 specular = light.specular * (spec * material.specular);
 
-   
    vec3 result = ambient + diffuse + specular;
    color = vec4(result, 1.0);
 }
