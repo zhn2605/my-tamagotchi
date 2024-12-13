@@ -6,6 +6,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -17,20 +18,39 @@ using namespace std;
 
 class Model {
 public:
-	Model(const string& path);
+	Model(const string &path, bool gamma = false);
 
-	void Draw(Shader& shader); 
+	void Draw(Shader &shader);
+	void SetName(const std::string name) { m_name = name; }
+	
+	// Transform setters
+	void SetPosition(const glm::vec3& position) {
+		m_modelMatrix = glm::translate(glm::mat4(1.0f), position);
+	}
 
+	void SetScale(const glm::vec3& scale) {
+		m_modelMatrix = glm::scale(m_modelMatrix, scale);
+	}
+
+	void SetRotation(float angle, const glm::vec3& axis) {
+		m_modelMatrix = glm::rotate(m_modelMatrix, glm::radians(angle), axis);
+	}
+	
+	glm::mat4 GetModelMatrix() { return m_modelMatrix; }
+	std::string GetName() { return m_name; }
+	bool gammaCorrection;
 private:
 	vector<Texture> textures_loaded; // already loaded textures
 	vector<Mesh> meshes;
 	string directory;
+	string m_name;
+	glm::mat4 m_modelMatrix = glm::mat4(1.0f);
 
-	void loadModel(string path);
+	void loadModel(string const& path);
 	void processNode(aiNode *node, const aiScene *scene);
 	Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 	vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName);
-	unsigned int TextureFromFile(const char* path, const string& directory);
+	unsigned int TextureFromFile(const char* path, const string& directory, bool gamma = false);
 };
 
 #endif

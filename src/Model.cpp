@@ -1,16 +1,18 @@
 #include "Model.hpp"
 
-Model::Model(const std::string& path) {
+Model::Model(const std::string& path, bool gamma) {
 	loadModel(path);
+    gammaCorrection = gamma;
 }
 
-void Model::loadModel(string path) {
+void Model::loadModel(string const &path) {
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(path,
         aiProcess_Triangulate |
         aiProcess_GenSmoothNormals |
-        aiProcess_FlipUVs);
+        aiProcess_FlipUVs |
+        aiProcess_CalcTangentSpace);
 
     // Error checking
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -77,6 +79,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         }
         else {
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+            std::cout << "Model has no tex coords" << std::endl;
         }
 
         vertices.push_back(vertex);
@@ -136,7 +139,8 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
     return textures;
 }
 
-unsigned int TextureFromFile(const char* path, const string& directory) {
+
+unsigned int Model::TextureFromFile(const char* path, const string& directory, bool gamma) {
     string filename = string(path);
     filename = directory + '/' + filename;
 
@@ -146,7 +150,7 @@ unsigned int TextureFromFile(const char* path, const string& directory) {
     int width, height, nrComponents;
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
     if (data) {
-        GLenum format;
+        GLenum format = GL_RED;
         if (nrComponents == 1)
             format = GL_RED;
         else if (nrComponents == 3)
@@ -170,4 +174,10 @@ unsigned int TextureFromFile(const char* path, const string& directory) {
     }
 
     return textureID;
+}
+
+void Model::Draw(Shader &shader) {
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].Draw(shader);
+    }
 }

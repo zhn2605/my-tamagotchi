@@ -73,14 +73,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include</IncludePath>
-    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include</IncludePath>
+    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ShortProjectName)\bin\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include</IncludePath>
-    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include</IncludePath>
+    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,22 +139,38 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\my-tamagotchi.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\App.hpp" />
     <ClInclude Include="include\Camera.hpp" />
     <ClInclude Include="include\glad\glad.h" />
     <ClInclude Include="include\KHR\khrplatform.h" />
+    <ClInclude Include="include\Mesh.hpp" />
+    <ClInclude Include="include\Model.hpp" />
+    <ClInclude Include="include\Scene.hpp" />
     <ClInclude Include="include\Shader.hpp" />
+    <ClInclude Include="include\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\frag.glsl" />
+    <None Include="assets\shaders\frag1.glsl" />
+    <None Include="assets\shaders\lightfrag.glsl" />
+    <None Include="assets\shaders\lightvert.glsl" />
+    <None Include="assets\shaders\vert.glsl" />
+    <None Include="assets\shaders\vert1.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,6 +8,7 @@
 
 #include "Shader.hpp"
 
+#include <iostream>
 #include <string>
 #include <vector>
 using namespace std;
@@ -20,14 +21,14 @@ struct Vertex {
 	glm::vec2 TexCoords;
 	glm::vec3 Tangent;
 	glm::vec3 Bitangent;
-	int m_BoneIDs[MAX_BONE_INFLUENCE];
-	float m_Weights[MAX_BONE_INFLUENCE];
+		int m_BoneIDs[MAX_BONE_INFLUENCE];
+		float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 struct Texture {
 	unsigned int id;
-	string path;
 	string type;
+	string path;
 };
 
 class Mesh {
@@ -35,12 +36,13 @@ public:
 	vector<Vertex> m_vertices;
 	vector<unsigned int> m_indices;
 	vector<Texture> m_textures;
+	unsigned int m_VAO;
 
 	Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, vector<Texture> textures);
 	void Draw(Shader &shader);
 
 private:
-	unsigned int m_VAO, m_VBO, m_EBO;
+	unsigned m_VBO, m_EBO;
 
 	void Initialize();
 };

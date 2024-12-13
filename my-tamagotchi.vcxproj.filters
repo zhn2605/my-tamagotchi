@@ -30,6 +30,18 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\App.hpp">
@@ -47,5 +59,37 @@
     <ClInclude Include="include\Camera.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Mesh.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Model.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\frag.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\vert.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\lightfrag.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\lightvert.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\vert1.glsl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="assets\shaders\frag1.glsl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

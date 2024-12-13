@@ -12,28 +12,20 @@
 // Libraries
 #include "App.hpp"
 #include "Camera.hpp"
+#include "Scene.hpp"
 #include "Shader.hpp"
-
-// Application Instance
-App app;
-Shader* graphicsShader;
-Camera camera;
 
 // Globals
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// VAO
-GLuint vertexArrayObject = 0;
-// VBO
-GLuint vertexBufferObject = 0;      // position
-// Program Objects (for shaders)
-GLuint elementBufferObject = 0;
-GLuint graphicsPipelineShaderProgram = 0;
+std::string vertexShaderSource = "./assets/shaders/vert.glsl";
+std::string fragmentShaderSource = "./assets/shaders/frag.glsl";
 
-float uOffset = -2.0f;
-float uRotate = 0.0f;
-float uScale = 1.0f;
+App app;
+Shader* graphicsShader;
+Camera camera;
+Scene scene;
 
 void CreateGraphicsPipeline() {
     std::string vertexShaderSource = "./assets/shaders/vert.glsl";
@@ -41,6 +33,7 @@ void CreateGraphicsPipeline() {
 
     graphicsShader = new Shader(vertexShaderSource, fragmentShaderSource);
     graphicsShader->useProgram();
+    scene.SetShaderProgram(graphicsShader->shaderProgram);
 }
 
 void GetOpenGLVersionInfo() {
@@ -65,7 +58,6 @@ void InitializeProgram() {
 
 // SDL Input Handling
 void Input() {
-
     static int mouseX = app.getWidth() / 2;
     static int mouseY = app.getHeight() / 2;
 
@@ -103,19 +95,29 @@ void Input() {
         }
     }
 
-
     // Screen Logic
     Uint32 windowFlags = SDL_GetWindowFlags(app.getWindow());
     if (state[SDL_SCANCODE_F]) {
         SDL_SetWindowFullscreen(app.getWindow(), SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
 
-    // Move Logic
-    // Speed
-    float multiplier = state[SDL_SCANCODE_LSHIFT] ? 3.0f : 1.0f;
-    float speed = 0.001f * deltaTime * multiplier;
+    float multiplier = 1.0;
+    const float base_fov = 60.0f;
+    const float max_fov = 100.0f;
+    const float fov_tween = 2.0f;
 
+    if (state[SDL_SCANCODE_LSHIFT]) {
+        multiplier = 3.0;
 
+        float fov_delta = (max_fov - base_fov) * (log(multiplier) / fov_tween);
+
+        camera.SetFovy(base_fov + fov_delta);
+    }
+    else {
+        camera.SetFovy(base_fov);
+    }
+
+    float speed = 0.01f * deltaTime * multiplier;
     if (state[SDL_SCANCODE_W]) {
         camera.MoveForward(speed);
     }
@@ -145,131 +147,29 @@ void Input() {
     }
 }
 
-void VertexSpecification() {
-    const std::vector<GLfloat> vertices{  // Create dynamic array
-        // Diamond
-        -0.25f, 0.0f, 0.0f,     // left
-        139.0f, 0.25f, 0.5f,     // color
+void InitializeModels() {
+    Model* backpack = scene.CreateModel("backpack", "./assets/models/backpack/backpack.obj");
+    Model* cat = scene.CreateModel("cat", "./assets/models/tamagotchi/Kitten/kitten_01.obj");
+    cat->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+    cat->SetScale(glm::vec3(.2f));
 
-        0.0f, 0.25f, 0.0f,       // top
-        139.0f, 0.5f, 0.25f,      // color
-
-        0.25f, 0.0f, 0.0f,      // right
-        139.0f, 0.55f, 0.3f,     // color
-
-        0.0f, -0.25f, 0.0f,     // bottom
-        139.0f, 0.15f, 0.15f,     // color
-    };
-
-
-    const std::vector<GLint> vertexIndicies{
-        0, 1, 2,                // top triangle
-        0, 3, 2,                // bot triangle
-    };
-
-    // VAO Specification
-    glGenVertexArrays(1, &vertexArrayObject);
-    glBindVertexArray(vertexArrayObject);
-
-    // Create VBO
-    glGenBuffers(1, &vertexBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(
-        0,
-        3, // xyz
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(GL_FLOAT) * 6,
-        (void*)0
-    );
-
-    // Enable color 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(
-        1,
-        3, // rgb
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(GL_FLOAT) * 6,
-        (void*)(sizeof(GL_FLOAT) * 3)
-    );
-
-    // Create EBO
-    glGenBuffers(1, &elementBufferObject);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexIndicies.size() * sizeof(GLint), vertexIndicies.data(), GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
+    backpack->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    backpack->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
-// Open GL Drawing
-void PreDraw() {
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+void PrepareDraw() {
+    scene.PrepareDraw(app.getWidth(), app.getHeight());
 
-    glViewport(0, 0, app.getWidth(), app.getHeight());        // creates a viewport starting left corner (0,0) 
-    glClearColor(0.2f, 0.3f, .3f, 1.0f);
-
+    glEnable(GL_DEPTH);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    graphicsShader->useProgram();     // modifying shaders in program object will not affect curr executables
-
-    // Important: ORDER MATTERS (T, R, S for rotation around object. R, T, S for simulated rotation around us
-    // Rotation test
-    uRotate -= .1f * deltaTime;
-    //std::cout << "uRotate: " << uRotate << std::endl;
-
-    // Translate
-    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, uOffset));
-    // Rotate
-    model = glm::rotate(model, glm::radians(uRotate), glm::vec3(0.0f, 1.0f, 0.0f));
-    // Scale
-    model = glm::scale(model, glm::vec3(uScale, uScale, uScale));
-
-    GLint u_ModelMatrixLocation = graphicsShader->getUniformLocation("u_ModelMatrix");
-    if (u_ModelMatrixLocation >= 0) {
-        glUniformMatrix4fv(u_ModelMatrixLocation, 1, GL_FALSE, &model[0][0]);
-    }
-    else {
-        std::cout << "could not find location of u_ModelMatrix. Mispelling?" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    // View Matrix
-    glm::mat4 view = camera.GetViewMatrix();
-    GLint u_viewLocataion = graphicsShader->getUniformLocation("u_ViewMatrix");
-    if (u_viewLocataion >= 0) {
-        glUniformMatrix4fv(u_viewLocataion, 1, GL_FALSE, &view[0][0]);
-    }
-    else {
-        std::cout << "could not find location of u_View. Mispelling?" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    glm::mat4 perspective = glm::perspective(glm::radians(45.0f), (float)app.getWidth() / (float)app.getHeight(), 0.1f, 10.0f);
-    GLint u_ProjectionLocation = graphicsShader->getUniformLocation("u_Projection");
-    if (u_ProjectionLocation >= 0) {
-        glUniformMatrix4fv(u_ProjectionLocation, 1, GL_FALSE, &perspective[0][0]);
-    }
-    else {
-        std::cout << "could not find location of u_Projection. Mispelling?" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    graphicsShader->setUniformMat4("u_ModelMatrix", scene.GetObject("backpack")->GetModelMatrix());
 }
 
 void Draw() {
-    // Sin diamond test
-    glBindVertexArray(vertexArrayObject);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+    scene.DrawObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix(), graphicsShader);
+    // scene.UpdateAll();
 }
 
 void MainLoop() {
@@ -287,7 +187,7 @@ void MainLoop() {
 
         Input();
 
-        PreDraw();
+        PrepareDraw();
 
         Draw();
 
@@ -309,9 +209,9 @@ int main()
 {
     InitializeProgram();
 
-    VertexSpecification();
-
     CreateGraphicsPipeline();
+
+    InitializeModels();
 
     MainLoop();
 
