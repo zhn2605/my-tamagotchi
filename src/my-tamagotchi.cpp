@@ -148,23 +148,26 @@ void Input() {
 }
 
 void InitializeModels() {
-    Model* backpack = scene.CreateModel("backpack", "./assets/models/backpack/backpack.obj");
+    std::cout << "Initializing Models" << std::endl;
     Model* cat = scene.CreateModel("cat", "./assets/models/tamagotchi/Kitten/kitten_01.obj");
-    cat->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+    cat->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     cat->SetScale(glm::vec3(.2f));
 
-    backpack->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    backpack->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+    // Light object
+    graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f, 1.0f, 0.2f));
+    graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.0f));
+    graphicsShader->setUniformVec3("light.diffuse", glm::vec3(0.8f));
+    graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
 }
 
 void PrepareDraw() {
     scene.PrepareDraw(app.getWidth(), app.getHeight());
 
     glEnable(GL_DEPTH);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    graphicsShader->setUniformMat4("u_ModelMatrix", scene.GetObject("backpack")->GetModelMatrix());
+    graphicsShader->setUniformMat4("u_ModelMatrix", scene.GetObject("cat")->GetModelMatrix());
 }
 
 void Draw() {
@@ -181,7 +184,7 @@ void MainLoop() {
 
     while (app.isActive()) {
         // Create delta time
-        float currentFrame = 1.0 * SDL_GetTicks();
+        float currentFrame = 1.0f * SDL_GetTicks();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 

@@ -25,6 +25,13 @@ struct Vertex {
 		float m_Weights[MAX_BONE_INFLUENCE];
 };
 
+struct Material {
+	glm::vec3 Ambient;
+	glm::vec3 Diffuse;
+	glm::vec3 Specular;
+	float Shininess;
+};
+
 struct Texture {
 	unsigned int id;
 	string type;
@@ -36,10 +43,12 @@ public:
 	vector<Vertex> m_vertices;
 	vector<unsigned int> m_indices;
 	vector<Texture> m_textures;
+	Material m_material;
 	unsigned int m_VAO;
 
-	Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, vector<Texture> textures);
+	Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, Material material);
 	void Draw(Shader &shader);
+	void DrawColor(Shader& shader);
 
 private:
 	unsigned m_VBO, m_EBO;

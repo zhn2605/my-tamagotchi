@@ -1,11 +1,14 @@
 #include "Mesh.hpp"
 
-Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, vector<Texture> textures) {
-	m_vertices = vertices;
+Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, Material material) {
+    std::cout << "start set up mesh" << std::endl;
+    m_vertices = vertices;
     m_indices = indicies;
-	m_textures = textures;
+	//m_textures = textures;
+    m_material = material;
 
 	Initialize();
+    std::cout << "successfully set up mesh" << std::endl;
 }
 
 void Mesh::Initialize() {
@@ -47,6 +50,17 @@ void Mesh::Initialize() {
     glBindVertexArray(0);
 }
 
+void Mesh::DrawColor(Shader& shader) {
+    shader.setUniformVec3("material.ambient", m_material.Ambient);
+    shader.setUniformVec3("material.diffuse", m_material.Diffuse);
+    shader.setUniformVec3("material.specular", m_material.Specular);
+    shader.setFloat("material.shininess", m_material.Shininess);
+
+    glBindVertexArray(m_VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_indices.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
 void Mesh::Draw(Shader &shader)
 {
     // bind appropriate textures
@@ -54,6 +68,8 @@ void Mesh::Draw(Shader &shader)
     unsigned int specularNr = 1;
     unsigned int normalNr = 1;
     unsigned int heightNr = 1;
+    
+    
     for (unsigned int i = 0; i < m_textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding

@@ -22,23 +22,27 @@ void Model::loadModel(string const &path) {
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+    std::cout << "loaded model successfully" << std::endl;
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        std::cout << "pushing back mesh" << i << std::endl;
         meshes.push_back(processMesh(mesh, scene));
+        std::cout << "pushed back mesh" << i << std::endl;
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         processNode(node->mChildren[i], scene);
     }
+    std::cout << "processed nodes correctly" << std::endl;
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<Texture> textures;
+    //vector<Texture> textures;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
@@ -79,7 +83,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         }
         else {
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            std::cout << "Model has no tex coords" << std::endl;
+            //std::cout << "Model has no tex coords" << std::endl;
         }
 
         vertices.push_back(vertex);
@@ -95,20 +99,63 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
 
     // process materials
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    Material matProps = loadMaterialColors(material);
+    std::cout << "matProps are set" << std::endl;
+
+    /*vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_specular");
+    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-    vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_normal");
+    vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "normal");
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-    vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_height");
-    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+    vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "height");
+    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());*/
 
     // return final mesh
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, indices, matProps);
+}
+
+Material Model::loadMaterialColors(aiMaterial* mat) {
+    Material material;
+
+    aiColor3D defaultColor(0.0f, 0.0f, 0.0f);
+    float shininess = 32.0f;
+
+    // Load colors
+    // Ambient
+    if (mat->Get(AI_MATKEY_COLOR_AMBIENT, defaultColor) == AI_SUCCESS) {
+        material.Ambient = glm::vec3(defaultColor.r, defaultColor.g, defaultColor.b);
+    } else {
+        material.Ambient = glm::vec3(0.1f);
+    }
+
+    // Diffuse
+    if (mat->Get(AI_MATKEY_COLOR_DIFFUSE, defaultColor) == AI_SUCCESS) {
+        material.Diffuse = glm::vec3(defaultColor.r, defaultColor.g, defaultColor.b);
+    } else {
+        material.Diffuse = glm::vec3(1.0f);
+    }
+
+    // Specular
+    if (mat->Get(AI_MATKEY_COLOR_SPECULAR, defaultColor) == AI_SUCCESS) {
+        material.Specular = glm::vec3(defaultColor.r, defaultColor.g, defaultColor.b);
+    } else {
+        material.Specular = glm::vec3(0.5f); // Default specular
+    }
+
+    // Shininess
+    if (mat->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+        material.Shininess = shininess;
+    }
+    else {
+        material.Shininess = 32.0f; // Default specular
+    }
+
+    std::cout << "successfully loaded material colors" << std::endl;
+    return material;
 }
 
 vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName) {
@@ -178,6 +225,6 @@ unsigned int Model::TextureFromFile(const char* path, const string& directory, b
 
 void Model::Draw(Shader &shader) {
     for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].Draw(shader);
+        meshes[i].DrawColor(shader);
     }
 }
