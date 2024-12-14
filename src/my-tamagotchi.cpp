@@ -156,7 +156,7 @@ void InitializeModels() {
     // Light object
     graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f, 1.0f, 0.2f));
     graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.0f));
-    graphicsShader->setUniformVec3("light.diffuse", glm::vec3(0.8f));
+    graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
     graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
 }
 
