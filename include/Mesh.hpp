@@ -48,8 +48,9 @@ public:
 
 	Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, Material material);
 	void Draw(Shader &shader);
+	void DrawLight(Shader& shader);
 	void DrawColor(Shader& shader);
-
+	void CleanUp();
 private:
 	unsigned m_VBO, m_EBO;
 

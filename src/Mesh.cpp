@@ -61,6 +61,14 @@ void Mesh::DrawColor(Shader& shader) {
     glBindVertexArray(0);
 }
 
+void Mesh::DrawLight(Shader& shader) {
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(m_VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_indices.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
+}
+
 void Mesh::Draw(Shader &shader)
 {
     // bind appropriate textures
@@ -101,4 +109,19 @@ void Mesh::Draw(Shader &shader)
 
     // always good practice to set everything back to defaults once configured.
     glActiveTexture(GL_TEXTURE0);
+}
+
+void Mesh::CleanUp() {
+    if (m_VBO != 0) {
+        glDeleteBuffers(1, &m_VBO);
+        m_VBO = 0;
+    }
+    if (m_VAO != 0) {
+        glDeleteVertexArrays(1, &m_VAO);
+        m_VAO = 0;
+    }
+    if (m_EBO != 0) {
+        glDeleteBuffers(1, &m_EBO);
+        m_EBO = 0;
+    }
 }

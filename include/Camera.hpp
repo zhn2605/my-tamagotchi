@@ -21,6 +21,7 @@ public:
 
 	void SetProjectionMatrix(float fovy, float aspect, float near, float far);
 	void SetFovy(float fovy);
+	void SetEyePosition(glm::vec3 position);
 
 	float GetFovy();
 	glm::vec3 GetEye();

@@ -86,6 +86,10 @@ void Camera::SetFovy(float fovy) {
     m_projectionMatrix = glm::perspective(glm::radians(fovy), m_aspect, m_near, m_far);
 }
 
+void Camera::SetEyePosition(glm::vec3 position) {
+    m_eye = position;
+}
+
 // Getters
 float Camera::GetFovy() { return m_fovy; }
 

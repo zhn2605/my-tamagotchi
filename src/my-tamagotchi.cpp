@@ -16,23 +16,24 @@
 #include "Shader.hpp"
 
 // Globals
+float currentFrame = 0.0f;
 float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
-std::string vertexShaderSource = "./assets/shaders/vert.glsl";
-std::string fragmentShaderSource = "./assets/shaders/frag.glsl";
+float lastFrame = 0.0f;;
 
 App app;
 Shader* graphicsShader;
+Shader* lightShader;
 Camera camera;
 Scene scene;
 
 void CreateGraphicsPipeline() {
     std::string vertexShaderSource = "./assets/shaders/vert.glsl";
     std::string fragmentShaderSource = "./assets/shaders/frag.glsl";
+    std::string lightVertexSource = "./assets/shaders/lightvert.glsl";
+    std::string lightFragmentSource = "./assets/shaders/lightfrag.glsl";
 
     graphicsShader = new Shader(vertexShaderSource, fragmentShaderSource);
-    graphicsShader->useProgram();
+    lightShader = new Shader(lightVertexSource, lightFragmentSource);
     scene.SetShaderProgram(graphicsShader->shaderProgram);
 }
 
@@ -150,32 +151,20 @@ void Input() {
 void InitializeModels() {
     std::cout << "Initializing Models" << std::endl;
     Model* cat = scene.CreateModel("cat", "./assets/models/tamagotchi/Kitten/kitten_01.obj");
+    Model* cube = scene.CreateModel("cube", "./assets/models/cube/cube.obj");
     cat->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     cat->SetScale(glm::vec3(.2f));
 
-    // Light object
-    graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f, 1.0f, 0.2f));
-    graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.0f));
-    graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
-    graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
-}
-
-void PrepareDraw() {
-    scene.PrepareDraw(app.getWidth(), app.getHeight());
-
-    glEnable(GL_DEPTH);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    graphicsShader->setUniformMat4("u_ModelMatrix", scene.GetObject("cat")->GetModelMatrix());
-}
-
-void Draw() {
-    scene.DrawObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix(), graphicsShader);
-    // scene.UpdateAll();
+    cube->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
+    cube->SetScale(glm::vec3(1.3f));
+    cube->SetLightEmitter(true);
 }
 
 void MainLoop() {
+    // Set camera position
+    camera.SetEyePosition(glm::vec3(0.0f, 1.3f, 1.5f));
+
     // Set mouse in middle of window
     SDL_WarpMouseInWindow(app.getWindow(), app.getWidth() / 2, app.getHeight() / 2);
 
@@ -184,15 +173,24 @@ void MainLoop() {
 
     while (app.isActive()) {
         // Create delta time
-        float currentFrame = 1.0f * SDL_GetTicks();
+        currentFrame = 1.0f * SDL_GetTicks();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         Input();
 
-        PrepareDraw();
+        // Prepare Draw
+        scene.PrepareDraw(app.getWidth(), app.getHeight());
 
-        Draw();
+        // Draw
+        scene.DrawObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix(), graphicsShader, lightShader);
+
+        // Light object
+        graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f + sin(currentFrame / 1000), 1.0f, 0.0f + cos(currentFrame / 1000)));
+        graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.03f, 0.0f, 0.0f));
+        graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
+        graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
+        // scene.UpdateAll(); 
 
         // Update the screen
         SDL_GL_SwapWindow(app.getWindow());
@@ -200,6 +198,8 @@ void MainLoop() {
 }
 
 void CleanUp() {
+    scene.CleanUpAll();
+
     graphicsShader->deleteProgram();
     
     // Terminate app

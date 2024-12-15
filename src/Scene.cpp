@@ -14,6 +14,8 @@ Model* Scene::CreateModel(const std::string name, const std::string &filepath) {
 
     Model* ptr = obj.get();
     m_objects.push_back(std::move(obj));
+
+    std::cout << "Model: " << name << " loaded successfully" << std::endl;
     return ptr;
 }
 
@@ -34,15 +36,12 @@ void Scene::PrepareDraw(int width, int height) {
 
     glViewport(0, 0, width, height);        // creates a viewport starting left corner (0,0) 
     //glClearColor(0.2f, 0.3f, .3f, 1.0f);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(m_bgColor.r, m_bgColor.g, m_bgColor.b, 0.0f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glUseProgram(m_shaderProgram);        // modifying shaders in program object will not affect curr executables
-
 }
 
-void Scene::DrawObjects(const glm::mat4 &view, const glm::mat4 &projection, Shader *shader) {
+void Scene::DrawObjects(const glm::mat4 &view, const glm::mat4 &projection, Shader *graphics, Shader *light) {
     // Set view and projection matrices
     GLint viewLocation = glGetUniformLocation(m_shaderProgram, "u_ViewMatrix");
     GLint projLocation = glGetUniformLocation(m_shaderProgram, "u_Projection");
@@ -55,7 +54,14 @@ void Scene::DrawObjects(const glm::mat4 &view, const glm::mat4 &projection, Shad
             glm::mat4 model = obj->GetModelMatrix();
             glUniformMatrix4fv(modelLocation, 1, GL_FALSE, &model[0][0]);
         }
+        // Draw object
+        obj->Draw(*graphics, *light);
+    }
+}
+
+void Scene::CleanUpAll() {
+    for (const auto& obj : m_objects) {
         // Draw objet
-        obj->Draw(*shader);
+        obj->CleanUp();
     }
 }

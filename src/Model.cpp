@@ -22,21 +22,17 @@ void Model::loadModel(string const &path) {
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
-    std::cout << "loaded model successfully" << std::endl;
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        std::cout << "pushing back mesh" << i << std::endl;
         meshes.push_back(processMesh(mesh, scene));
-        std::cout << "pushed back mesh" << i << std::endl;
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         processNode(node->mChildren[i], scene);
     }
-    std::cout << "processed nodes correctly" << std::endl;
 }
 
 Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
@@ -100,7 +96,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
     // process materials
     aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
     Material matProps = loadMaterialColors(material);
-    std::cout << "matProps are set" << std::endl;
 
     /*vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -153,8 +148,6 @@ Material Model::loadMaterialColors(aiMaterial* mat) {
     else {
         material.Shininess = 32.0f; // Default specular
     }
-
-    std::cout << "successfully loaded material colors" << std::endl;
     return material;
 }
 
@@ -216,15 +209,27 @@ unsigned int Model::TextureFromFile(const char* path, const string& directory, b
 
         stbi_image_free(data);
     } else {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
 
     return textureID;
 }
 
-void Model::Draw(Shader &shader) {
+void Model::Draw(Shader &graphics, Shader &light) {
     for (unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].DrawColor(shader);
+        if (m_isLightEmitter) {
+            light.useProgram();
+            meshes[i].DrawLight(light);
+        }
+        else {
+            graphics.useProgram();
+            meshes[i].DrawColor(graphics);
+        }
+    }
+}
+
+void Model::CleanUp() {
+    for (unsigned int i = 0; i < meshes.size(); i++) {
+        meshes[i].CleanUp();
     }
 }
