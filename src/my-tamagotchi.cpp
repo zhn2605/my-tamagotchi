@@ -140,6 +140,26 @@ void Input() {
     else {
         camera.SetFovy(base_fov);
     }
+    Model* cat = scene.GetObject("cat");
+    Model* frog = scene.GetObject("frog");
+
+    // switch from cat to frog
+    if (state[SDL_SCANCODE_1]) {
+        cat->SetPosition(glm::vec3(0.0f));
+        cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        cat->SetScale(glm::vec3(.2f));
+        frog->SetPosition(glm::vec3(100.0f));
+        frog->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        frog->SetScale(glm::vec3(0.1f));
+    }
+    if (state[SDL_SCANCODE_2]) {
+        cat->SetPosition(glm::vec3(100.0f));
+        cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        cat->SetScale(glm::vec3(.2f));
+        frog->SetPosition(glm::vec3(0.0f));
+        frog->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+        frog->SetScale(glm::vec3(0.1f));
+    }
 
     float speed = deltaTime * multiplier;
     if (state[SDL_SCANCODE_W]) {
@@ -177,6 +197,11 @@ void InitializeModels() {
     cat->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     cat->SetScale(glm::vec3(.2f));
+
+    Model* frog = scene.CreateModel("frog", "./assets/models/tamagotchi/Frog/frog_01.obj");
+    frog->SetPosition(glm::vec3(100.0f, 0.0f, 0.0f));
+    frog->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    frog->SetScale(glm::vec3(0.1f));
 }
 
 void MainLoop() {
