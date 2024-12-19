@@ -73,14 +73,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include</IncludePath>
-    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include;C:\Users\zziha\libs\irrKlang-64bit-1.6.0\include</IncludePath>
+    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;C:\Users\zziha\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(ShortProjectName)\bin\Intermediate\$(Configuration)\</IntDir>
-    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include</IncludePath>
-    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\zziha\libs\SDL2-2.30.9\include;C:\Users\zziha\libs\Assimp\include;C:\Users\zziha\libs\irrKlang-64bit-1.6.0\include</IncludePath>
+    <LibraryPath>C:\Users\zziha\libs\SDL2-2.30.9\lib\x64;C:\Users\zziha\libs\Assimp\lib\x64;C:\Users\zziha\libs\irrKlang-64bit-1.6.0\lib\Winx64-visualStudio;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -121,7 +121,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib;irrKlang.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,7 +144,7 @@
       <OptimizeReferences>
       </OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;assimp-vc143-mt.lib;irrKlang.lib</AdditionalDependencies>
       <LinkTimeCodeGeneration />
     </Link>
   </ItemDefinitionGroup>

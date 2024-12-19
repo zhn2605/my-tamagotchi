@@ -8,6 +8,9 @@
 // GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+// irrKlang
+#include <irrKlang.h>
+using namespace irrklang;
 
 // Libraries
 #include "App.hpp"
@@ -25,6 +28,7 @@ Shader* graphicsShader;
 Shader* lightShader;
 Camera camera;
 Scene scene;
+ISoundEngine* SoundEngine = createIrrKlangDevice();
 
 void CreateGraphicsPipeline() {
     std::string vertexShaderSource = "./assets/shaders/vert.glsl";
@@ -52,6 +56,22 @@ void InitializeProgram() {
     if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
         std::cout << "Could not initialize glad.\n" << std::endl;
         exit(1);
+    }
+
+    if (!SoundEngine) {
+        std::cout << "Failed to create sound engine from irrKlang.\n" << std::endl;
+        exit(1);
+    }
+    else {
+        ISound* rain = SoundEngine->play2D("./assets/audio/music/heavy-rain.wav", true, false, true);
+        rain->setVolume(0.1f);
+        rain->setMinDistance(1.0f);
+        rain->setMaxDistance(3.0f);
+
+        glm::vec3 cameraPos = camera.GetEye();
+        glm::vec3 lookDir = camera.GetLookDir();
+
+        SoundEngine->setListenerPosition(vec3df(cameraPos.x, cameraPos.y, cameraPos.z), vec3df(lookDir.x, lookDir.y, lookDir.z));
     }
 
     GetOpenGLVersionInfo();
@@ -151,19 +171,14 @@ void Input() {
 void InitializeModels() {
     std::cout << "Initializing Models" << std::endl;
     Model* cat = scene.CreateModel("cat", "./assets/models/tamagotchi/Kitten/kitten_01.obj");
-    Model* cube = scene.CreateModel("cube", "./assets/models/cube/cube.obj");
     cat->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     cat->SetScale(glm::vec3(.2f));
-
-    cube->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
-    cube->SetScale(glm::vec3(1.3f));
-    cube->SetLightEmitter(true);
 }
 
 void MainLoop() {
     // Set camera position
-    camera.SetEyePosition(glm::vec3(0.0f, 1.3f, 1.5f));
+    camera.SetEyePosition(glm::vec3(0.0f, 1.3f, 2.3f));
 
     // Set mouse in middle of window
     SDL_WarpMouseInWindow(app.getWindow(), app.getWidth() / 2, app.getHeight() / 2);
@@ -177,6 +192,13 @@ void MainLoop() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        // Player position
+        glm::vec3 cameraPos = camera.GetEye();
+        glm::vec3 lookDir = camera.GetLookDir();
+
+        // Update sound
+        SoundEngine->setListenerPosition(vec3df(cameraPos.x, cameraPos.y, cameraPos.z), vec3df(lookDir.x, lookDir.y, lookDir.z));
+
         Input();
 
         // Prepare Draw
@@ -186,7 +208,7 @@ void MainLoop() {
         scene.DrawObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix(), graphicsShader, lightShader);
 
         // Light object
-        graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f + sin(currentFrame / 1000), 1.0f, 0.0f + cos(currentFrame / 1000)));
+        graphicsShader->setUniformVec3("light.position", cameraPos);
         graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.03f, 0.0f, 0.0f));
         graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
         graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
@@ -198,9 +220,14 @@ void MainLoop() {
 }
 
 void CleanUp() {
+    // Clean up objects
     scene.CleanUpAll();
 
+    // Delete pipeline
     graphicsShader->deleteProgram();
+
+    // Remove sound engine
+    SoundEngine->drop();
     
     // Terminate app
     app.Terminate();
