@@ -74,6 +74,9 @@ void InitializeProgram() {
         SoundEngine->setListenerPosition(vec3df(cameraPos.x, cameraPos.y, cameraPos.z), vec3df(lookDir.x, lookDir.y, lookDir.z));
     }
 
+    // Initialize random seed
+    srand(time(NULL));
+
     GetOpenGLVersionInfo();
 }
 
@@ -138,7 +141,7 @@ void Input() {
         camera.SetFovy(base_fov);
     }
 
-    float speed = 0.01f * deltaTime * multiplier;
+    float speed = deltaTime * multiplier;
     if (state[SDL_SCANCODE_W]) {
         camera.MoveForward(speed);
     }
@@ -186,11 +189,27 @@ void MainLoop() {
     // Set mouse to move relatively within application
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
+    // Set random timer
+    int timer = rand() % 30 + 1;
+
+    float nextSoundTime = 0.0f;
+    float currentTime = 0.0f;
+
     while (app.isActive()) {
         // Create delta time
         currentFrame = 1.0f * SDL_GetTicks();
-        deltaTime = currentFrame - lastFrame;
+        deltaTime = (currentFrame - lastFrame) / 1000.0f;
         lastFrame = currentFrame;
+
+        // Update current time
+        currentTime += deltaTime;
+
+        if (currentTime >= nextSoundTime) {
+            SoundEngine->play2D("./assets/audio/sfx/meow.wav", false);  // false means don't loop the sound
+
+            float randomInterval = 1.0f + (rand() % 30);
+            nextSoundTime = currentTime + randomInterval;
+        }
 
         // Player position
         glm::vec3 cameraPos = camera.GetEye();
@@ -208,7 +227,7 @@ void MainLoop() {
         scene.DrawObjects(camera.GetViewMatrix(), camera.GetProjectionMatrix(), graphicsShader, lightShader);
 
         // Light object
-        graphicsShader->setUniformVec3("light.position", cameraPos);
+        graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f));
         graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.03f, 0.0f, 0.0f));
         graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
         graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
