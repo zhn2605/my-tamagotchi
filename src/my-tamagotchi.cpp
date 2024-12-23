@@ -13,10 +13,10 @@
 using namespace irrklang;
 
 // Libraries
-#include "App.hpp"
-#include "Camera.hpp"
-#include "Scene.hpp"
-#include "Shader.hpp"
+#include "app.hpp"
+#include "camera.hpp"
+#include "scene.hpp"
+#include "shader.hpp"
 
 // Globals
 float currentFrame = 0.0f;

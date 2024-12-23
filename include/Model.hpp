@@ -12,8 +12,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "Shader.hpp"
-#include "Mesh.hpp"
+#include "shader.hpp"
+#include "mesh.hpp"
 using namespace std;
 
 class Model {
