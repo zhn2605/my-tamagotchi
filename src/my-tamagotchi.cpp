@@ -142,6 +142,7 @@ void Input() {
     }
     Model* cat = scene.GetObject("cat");
     Model* frog = scene.GetObject("frog");
+    Model* mouse = scene.GetObject("mouse");
 
     // switch from cat to frog
     if (state[SDL_SCANCODE_1]) {
@@ -194,7 +195,7 @@ void Input() {
 void InitializeModels() {
     std::cout << "Initializing Models" << std::endl;
     Model* cat = scene.CreateModel("cat", "./assets/models/tamagotchi/Kitten/kitten_01.obj");
-    cat->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    cat->SetPosition(glm::vec3(100.0f, 0.0f, 0.0f));
     cat->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     cat->SetScale(glm::vec3(.2f));
 
@@ -202,6 +203,11 @@ void InitializeModels() {
     frog->SetPosition(glm::vec3(100.0f, 0.0f, 0.0f));
     frog->SetRotation(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     frog->SetScale(glm::vec3(0.1f));
+
+    Model* mouse = scene.CreateModel("mouse", "./assets/models/tamagotchi/Mouse/mouse_01.obj");
+    mouse->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    mouse->SetRotation(90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    mouse->SetScale(glm::vec3(.001f));
 }
 
 void MainLoop() {
@@ -253,7 +259,7 @@ void MainLoop() {
 
         // Light object
         graphicsShader->setUniformVec3("light.position", glm::vec3(0.0f));
-        graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.03f, 0.0f, 0.0f));
+        graphicsShader->setUniformVec3("light.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
         graphicsShader->setUniformVec3("light.diffuse", glm::vec3(1.0f));
         graphicsShader->setUniformVec3("light.specular", glm::vec3(1.2f));
         // scene.UpdateAll(); 
