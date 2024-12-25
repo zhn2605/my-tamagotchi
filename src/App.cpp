@@ -1,4 +1,4 @@
-#include "App.hpp"
+#include "app.hpp"
 #include <iostream>
 
 App::App() {

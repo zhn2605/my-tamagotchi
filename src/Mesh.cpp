@@ -1,4 +1,4 @@
-#include "Mesh.hpp"
+#include "mesh.hpp"
 
 Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, Material material) {
     std::cout << "start set up mesh" << std::endl;
