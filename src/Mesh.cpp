@@ -1,14 +1,14 @@
 #include "mesh.hpp"
 
 Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indicies, Material material) {
-    std::cout << "start set up mesh" << std::endl;
+    // std::cout << "start set up mesh" << std::endl;
     m_vertices = vertices;
     m_indices = indicies;
 	//m_textures = textures;
     m_material = material;
 
 	Initialize();
-    std::cout << "successfully set up mesh" << std::endl;
+    // std::cout << "successfully set up mesh" << std::endl;
 }
 
 void Mesh::Initialize() {

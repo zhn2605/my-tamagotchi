@@ -22,7 +22,7 @@ void Camera::UpdateAspectRatio(float aspect) {
 }
 
 void Camera::MouseLook(int mouseX, int mouseY) {
-    std::cout << "mouse: " << mouseX << ", " << mouseY << std::endl;
+    // std::cout << "mouse: " << mouseX << ", " << mouseY << std::endl;
 
     glm::vec2 currentMouse = glm::vec2((float)mouseX, (float)mouseY);
 
